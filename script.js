@@ -447,29 +447,26 @@ const TRANSLATION_MAP = {
     "8": 8,
     "9": 9,
     "10": 10,
-    "Első hely": 1,
-    "Második hely": 2,
-    "Harmadik hely": 3,
-    "Negyedik hely": 4,
-    "Ötödik hely": 5,
-    "Hatodik hely": 6,
-    "Hetedik hely": 7,
-    "Nyolcadik hely": 8,
-    "Kilencedik hely": 9,
-    "Tizedik hely": 10,
-    "igen": 1,
-    "nem": 2,
-    "tartózkodom": 3,
-    "Igen": VOTE_YES,
-    "Nem": VOTE_NO,
-    "Tartózkodom": VOTE_ABSTAIN
+    "első hely": 1,
+    "második hely": 2,
+    "harmadik hely": 3,
+    "negyedik hely": 4,
+    "ötödik hely": 5,
+    "hatodik hely": 6,
+    "hetedik hely": 7,
+    "nyolcadik hely": 8,
+    "kilencedik hely": 9,
+    "tizedik hely": 10,
+    "igen": VOTE_YES,
+    "nem": VOTE_NO,
+    "tartózkodom": VOTE_ABSTAIN
 };
 
 function translate(key, max) {
     if (key == undefined) {
         return max;
     }
-    return TRANSLATION_MAP[key];
+    return TRANSLATION_MAP[key.toLowerCase()];
 }
 
 function showSpinner() {
