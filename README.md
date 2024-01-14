@@ -1,3 +1,3 @@
 # js-evaluator
 
-A simple JavaScript to evaluate preferential and yes/no question votes.
+A simple JavaScript software to evaluate and display preferential and simple yes/no question votes.

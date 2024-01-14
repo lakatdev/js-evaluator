@@ -5,9 +5,11 @@ function loadFile() {
     let file = fileInput.files[0];
     let reader = new FileReader();
     let algorithmDropdown = document.getElementById("algorithmDropdown");
+    let votersNumberField = document.getElementById("votersNumber");
+    let numVoters = parseInt(votersNumberField.value, 10);
 
-    // Don't do anything if there is no file
-    if (!file) {
+    // Don't do anything if there is no file or number of voters is incorrect
+    if (!file || isNaN(numVoters) || numVoters <= 0) {
         return;
     }
 
@@ -19,10 +21,10 @@ function loadFile() {
         let selectedAlgorithm = algorithmDropdown.value;
         switch (selectedAlgorithm) {
             case "pref_cb":
-                evaluateCBPreferential(contents);
+                evaluateCBPreferential(contents, numVoters);
                 break;
             case "yesno":
-                evaluateYesNo(contents);
+                evaluateYesNo(contents, numVoters);
                 break;
             default:
                 break;
@@ -35,7 +37,7 @@ function loadFile() {
     reader.readAsText(file);
 }
 
-function evaluateYesNo(csvData) {
+function evaluateYesNo(csvData, numVoters) {
 
     // Load data from csv and remove timestamp column
     let dataArray = csvStringToArray(csvData).map(function(row) {
@@ -48,9 +50,11 @@ function evaluateYesNo(csvData) {
     // Translate input strings to ints
     for (const row of dataArray) {
         for (let i = 0; i < row.length; i++) {
-            row[i] = translate(row[i], questions.length);
+            row[i] = translate(row[i], undefined);
         }
     }
+
+    console.log(dataArray);
 
     //initialize results
     let resultsYes = {}
@@ -79,30 +83,38 @@ function evaluateYesNo(csvData) {
         }
     }
 
+    // Display results
+    // Results table
     clearTable();
     clearText();
-    let table = [["Szavazás", "Igen", "Nem", "Tartózkodom"]];
+    let table = [["Szavazás", "Igen", "Nem", "Tartózkodom", "Szavazott", "Nem szavazott"]];
     for (let i = 0; i < questions.length; i++) {
         addText((i + 1) + ".: " + questions[i] + "<br>");
         let row = [i + 1];
         row.push(resultsYes[questions[i]]);
         row.push(resultsNo[questions[i]]);
         row.push(resultsAbstain[questions[i]]);
+        let sum = resultsYes[questions[i]] + resultsAbstain[questions[i]] + resultsNo[questions[i]];
+        row.push(sum);
+        row.push(numVoters - sum);
         table.push(row);
     }
     displayTable(table);
 
+    // Parliament diagrams
     clearCharts();
     for (const question of questions) {
         let displayCharts = [["Jelölt", "Preferencia"]];
         displayCharts.push(["Igen", resultsYes[question]]);
         displayCharts.push(["Tartózkodom", resultsAbstain[question]]);
         displayCharts.push(["Nem", resultsNo[question]]);
+        let sum = resultsYes[question] + resultsAbstain[question] + resultsNo[question];
+        displayCharts.push(["Nem szavazott", numVoters - sum]);
         addHalfDonutChart(question, displayCharts);
     }
 }
 
-function evaluateCBPreferential(csvData) {
+function evaluateCBPreferential(csvData, numVoters) {
 
     // Load data from csv and remove timestamp column
     let dataArray = csvStringToArray(csvData).map(function(row) {
@@ -251,6 +263,7 @@ function evaluateCBPreferential(csvData) {
     displayTable(table);
 
     clearText();
+    addText("Leadott szavazatok száma: " + (dataArray.length) + " - " + (dataArray.length / numVoters * 100).toFixed(2) + "%<br>");
     addText("A megállapított sorrend: ");
     for (const candidate of candidates) {
         addText(candidate + "; ");
