@@ -54,8 +54,6 @@ function evaluateYesNo(csvData, numVoters) {
         }
     }
 
-    console.log(dataArray);
-
     //initialize results
     let resultsYes = {}
     let resultsNo = {}
@@ -121,15 +119,11 @@ function evaluateCBPreferential(csvData, numVoters) {
         return row.slice(1);
     });
 
-    console.log(dataArray);
-
     // Extract candidates
     let candidates = dataArray.shift().map(function(candidate) {
         let match = candidate.match(/\[(.*?)\]/);
         return match ? match[1] : ''; // Extract the matched string or an empty string if no match
     });
-
-    console.log(dataArray);
 
     // Translate input strings to ints
     for (const row of dataArray) {
@@ -137,8 +131,6 @@ function evaluateCBPreferential(csvData, numVoters) {
             row[i] = translate(row[i], candidates.length);
         }
     }
-
-    console.log(dataArray);
 
     // Initialize borda counter
     let bordaScore = {};
@@ -156,8 +148,6 @@ function evaluateCBPreferential(csvData, numVoters) {
             }
         }
     }
-
-    console.log(bordaScore);
 
     // Has to be a map because that can use arrays as keys
     let comparison = new Map();
@@ -226,10 +216,6 @@ function evaluateCBPreferential(csvData, numVoters) {
         }
         return copelandScore[b] - copelandScore[a];
     });
-
-    console.log(copelandScore);
-    console.log(bordaScore);
-    console.log(comparison);
 
     let table = [["1st \\ 2nd"]];
     for (const candidate of candidates) {
