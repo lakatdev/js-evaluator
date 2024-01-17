@@ -85,7 +85,7 @@ function evaluateYesNo(csvData, numVoters) {
     // Results table
     clearTable();
     clearText();
-    let table = [["Szavazás", "Igen", "Nem", "Tartózkodom", "Szavazott", "Nem szavazott"]];
+    let table = [["Szavazás", "Igen", "Nem", "Tartózkodom", "Szavazott", "Nem szavazott", "Határozatképes", "Absz. többség", "MÜKRE mód."]];
     for (let i = 0; i < questions.length; i++) {
         addText((i + 1) + ".: " + questions[i] + "<br>");
         let row = [i + 1];
@@ -95,6 +95,31 @@ function evaluateYesNo(csvData, numVoters) {
         let sum = resultsYes[questions[i]] + resultsAbstain[questions[i]] + resultsNo[questions[i]];
         row.push(sum);
         row.push(numVoters - sum);
+
+        // quorum (MUEKRE 1.1.3 - 2024-01-17)
+        if (sum >= numVoters - sum) {
+            row.push("✓");
+        }
+        else {
+            row.push("X");
+        }
+
+        // absolute majority of participants (MUEKRE 1.1.3 - 2024-01-17)
+        if (resultsYes[questions[i]] > resultsNo[questions[i]] + resultsAbstain[questions[i]]) {
+            row.push("✓");
+        }
+        else {
+            row.push("X");
+        }
+
+        // qualified majority of participants (MUEKRE 7.1 - 2024-01-17)
+        if (sum > numVoters - sum && resultsYes[questions[i]] > 2 * (resultsNo[questions[i]] + resultsAbstain[questions[i]])) {
+            row.push("✓");
+        }
+        else {
+            row.push("X");
+        }
+
         table.push(row);
     }
     displayTable(table);
