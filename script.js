@@ -113,7 +113,7 @@ function evaluateYesNo(csvData, numVoters) {
         }
 
         // qualified majority of participants (MUEKRE 7.1 - 2024-01-17)
-        if (sum > numVoters - sum && resultsYes[questions[i]] > 2 * (resultsNo[questions[i]] + resultsAbstain[questions[i]])) {
+        if (2 * resultsYes[questions[i]] > numVoters && resultsYes[questions[i]] > 2 * (resultsNo[questions[i]] + resultsAbstain[questions[i]])) {
             row.push("✓");
         }
         else {
