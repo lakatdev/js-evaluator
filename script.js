@@ -15,6 +15,7 @@ function loadFile() {
 
     hideResults();
     showSpinner();
+    clearWarnings();
 
     reader.onload = function(e) {
         let contents = e.target.result;
@@ -245,7 +246,7 @@ function evaluateCBPreferential(csvData, numVoters) {
             warningMessage += `${comparison}: ${headToHeadParticipation[comparison].toFixed(1)}%\n`;
         }
         warningMessage += "\nEz befolyásolhatja az eredmény megbízhatóságát.";
-        alert(warningMessage);
+        addWarning(warningMessage.replace(/\n/g, '<br>'));
     }
 
     // Evaluate first preferences before sorting
@@ -526,10 +527,23 @@ function translate(key, max) {
     let translatedValue = TRANSLATION_MAP[key.toLowerCase()];
     
     if (translatedValue === undefined) {
-        alert(`Ellenőrizze a helyes formátumot "${key}"`);
+        addWarning(`Érvénytelen bemenet észlelve: "${key}". Ellenőrizze a helyes formátumot.`);
     }
     
     return translatedValue;
+}
+
+function addWarning(message) {
+    let warningsContainer = document.getElementById("warnings");
+    let warningDiv = document.createElement("div");
+    warningDiv.className = "warning";
+    warningDiv.innerHTML = message;
+    warningsContainer.appendChild(warningDiv);
+}
+
+function clearWarnings() {
+    let warningsContainer = document.getElementById("warnings");
+    warningsContainer.innerHTML = "";
 }
 
 function showSpinner() {
