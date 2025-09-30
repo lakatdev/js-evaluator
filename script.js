@@ -216,6 +216,38 @@ function evaluateCBPreferential(csvData, numVoters) {
         }
     }
 
+    // Check head-to-head comparison validity (80% threshold)
+    let totalValidVotes = dataArray.length;
+    let headToHeadParticipation = {};
+    
+    for (let i = 0; i < candidates.length; i++) {
+        for (let j = i + 1; j < candidates.length; j++) {
+            let c1 = candidates[i];
+            let c2 = candidates[j];
+            let key1 = JSON.stringify([c1, c2]);
+            let key2 = JSON.stringify([c2, c1]);
+            
+            let totalComparisons = comparison.get(key1) + comparison.get(key2);
+            let participationRate = (totalComparisons / totalValidVotes) * 100;
+            
+            if (participationRate < 80) {
+                if (!headToHeadParticipation[c1 + " vs " + c2]) {
+                    headToHeadParticipation[c1 + " vs " + c2] = participationRate;
+                }
+            }
+        }
+    }
+    
+    // Show warning if any head-to-head comparison is below 80%
+    if (Object.keys(headToHeadParticipation).length > 0) {
+        let warningMessage = "Figyelmeztetés: Az alábbi összehasonlítások nem érik el a 80%-os részvételi arányt:\n\n";
+        for (let comparison in headToHeadParticipation) {
+            warningMessage += `${comparison}: ${headToHeadParticipation[comparison].toFixed(1)}%\n`;
+        }
+        warningMessage += "\nEz befolyásolhatja az eredmény megbízhatóságát.";
+        alert(warningMessage);
+    }
+
     // Evaluate first preferences before sorting
     let firstPreference = {};
     for (const candidate of candidates) {
@@ -487,10 +519,17 @@ const TRANSLATION_MAP = {
 };
 
 function translate(key, max) {
-    if (key == undefined) {
+    if (key == undefined || key.trim() === "") {
         return max;
     }
-    return TRANSLATION_MAP[key.toLowerCase()];
+    
+    let translatedValue = TRANSLATION_MAP[key.toLowerCase()];
+    
+    if (translatedValue === undefined) {
+        alert(`Ellenőrizze a helyes formátumot "${key}"`);
+    }
+    
+    return translatedValue;
 }
 
 function showSpinner() {
